@@ -85,7 +85,7 @@ public class Controller {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("csv","*.csv"));
                 File file = fileChooser.showOpenDialog(saveSettingsButton.getScene().getWindow());
-                connectorSQL.loadCsvExchangeData(file);
+                connectorSQL.recalculateDB();
             } catch (Exception e) {
                 showError("Ошибка СУБД", e.getMessage());
                 e.printStackTrace();

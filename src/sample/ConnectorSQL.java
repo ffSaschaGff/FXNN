@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ConnectorSQL {
@@ -33,7 +34,7 @@ public class ConnectorSQL {
         StringBuilder sqlDelete = new StringBuilder();
         StringBuilder sql = new StringBuilder();
         try {
-            Files.lines(file.toPath()).forEach(line -> {
+            for (String line: (new String(Files.readAllBytes(file.toPath()))).split("\n")) {
                 if(sql.length() != 0) {
                     sql.append("\n");
                     sqlDelete.append("\n");
@@ -52,7 +53,7 @@ public class ConnectorSQL {
                     first = false;
                 }
                 sql.append(");");
-            });
+            }
             connection.createStatement().execute(sqlDelete.toString());
             connection.createStatement().execute(sql.toString());
         } catch (IOException e) {
@@ -63,31 +64,30 @@ public class ConnectorSQL {
     public void recalculateDB() throws SQLException {
         StringBuilder sql = new StringBuilder();
         ResultSet resultSet = connection.createStatement().executeQuery("select T1._date, T1._open, T1._high, T1._low, T1._close from exchange_data as T1 order by T1._date");
-        while (resultSet.next()) {
-            double high = resultSet.getDouble("_high");
-            double low = resultSet.getDouble("_low");
-            double open = resultSet.getDouble("_open");
-            double close = resultSet.getDouble("_close");
-            double range = high - low;
-            if (range == 0) {
-                range = 0.00001;
+        ArrayList<PreperedDataRow> dataRows = PreperedDataRow.generateArrayOfData(resultSet);
+        for (PreperedDataRow row: dataRows) {
+            if (row.isFullData()) {
+                if (sql.length() != 0) {
+                    sql.append("\n");
+                }
+                sql.append("UPDATE EXCHANGE_DATA as T1 set ");
+                sql.append("_body_pos = '").append(row.getBodyPos()).append("', ");
+                sql.append("_body_neg = '").append(row.getBodyNeg()).append("', ");
+                sql.append("_ma1 = '").append(row.getMa1()).append("', ");
+                sql.append("_ma2 = '").append(row.getMa2()).append("', ");
+                sql.append("_top_tail = '").append(row.getTopTail()).append("', ");
+                sql.append("_bottom_tail = '").append(row.getBottomTail()).append("', ");
+                sql.append("_is_up = '").append(row.isFutureUp()).append("', ");
+                sql.append("_is_down = '").append(row.isFutureDown()).append("', ");
+                sql.append("_is_middle = '").append(row.isFutureSame()).append("', ");
+                sql.append("_tm1m2 = '").append(row.isTm1m2()).append("', ");
+                sql.append("_tm2m1 = '").append(row.isTm2m1()).append("', ");
+                sql.append("_m1tm2 = '").append(row.isM1tm2()).append("', ");
+                sql.append("_m1m2t = '").append(row.isM1m2t()).append("', ");
+                sql.append("_m2m1t = '").append(row.isM2m1t()).append("', ");
+                sql.append("_m2tm1 = '").append(row.isM2tm1()).append("', ");
+                sql.append(" where T1._data = '").append(row.getDate()).append("';");
             }
-            double top_tail = (high-Math.max(open, close))/range;
-            double bottom_tail = (Math.min(open, close)-low)/range;
-            double body = close - open;
-            double bodyPos, bodyNeg;
-            if (body > 0) {
-                bodyPos = body/range;
-                bodyNeg = 0;
-            } else {
-                bodyPos = 0;
-                bodyNeg = body/range;
-            }
-
-            if (sql.length() != 0) {
-                sql.append("\n");
-            }
-            //sql.append("update")
         }
     }
 
@@ -107,14 +107,21 @@ public class ConnectorSQL {
                 "_high real," +
                 "_low real," +
                 "_close real," +
-                "_body real," +             //ut, gt, b+, b- ratio
+                "_body_pos real," +
+                "_body_neg real," +             //ut, gt, b+, b- ratio
                 "_top_tail real," +         //
                 "_bottom_tail real," +      //one of 6 relative value and ma
-                "_ma20 real," +             //mom~, stac~ 6 position of 2 graph
-                "_ma80 real," +             //Encog?
+                "_ma1 real," +             //mom~, stac~ 6 position of 2 graph
+                "_ma2 real," +             //Encog?
                 "_is_up boolean," +
                 "_is_down boolean," +
                 "_is_middle boolean," +
+                "_tm1m2 boolean," +
+                "_tm2m1 boolean," +
+                "_m1tm2 boolean," +
+                "_m1m2t boolean," +
+                "_m2m1t boolean," +
+                "_m2tm1 boolean," +
                 "PRIMARY KEY (_date))";
     }
 }
