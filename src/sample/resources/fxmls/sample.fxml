@@ -26,6 +26,7 @@
                      <Menu mnemonicParsing="false" text="СУБД">
                          <items>
                              <MenuItem mnemonicParsing="false" onAction="#recreateDB" text="Пересоздать" />
+                        <MenuItem mnemonicParsing="false" onAction="#recalculateDB" text="Пересчитать" />
                          </items>
                      </Menu>
                      <Menu mnemonicParsing="false" text="Help">
@@ -51,7 +52,7 @@
                            <children>
                               <VBox prefHeight="200.0" prefWidth="430.0">
                                  <children>
-                                     <Button id="button_save_settings" fx:id="SaveSettingsButton" mnemonicParsing="false" onAction="#saveSettings" text="Сохранить" />
+                                     <Button id="button_save_settings" fx:id="saveSettingsButton" mnemonicParsing="false" onAction="#saveSettings" text="Сохранить" />
                                     <HBox prefHeight="100.0" prefWidth="200.0">
                                        <children>
                                           <VBox prefHeight="200.0" prefWidth="100.0">
