@@ -18,14 +18,14 @@
          <children>
              <MenuBar>
                  <menus>
-                     <Menu mnemonicParsing="false" text="File">
+                     <Menu mnemonicParsing="false" text="Файл">
                          <items>
-                             <MenuItem mnemonicParsing="false" text="Загрузить *.csv" />
+                             <MenuItem mnemonicParsing="false" onAction="#loadCsvToDB" text="Загрузить *.csv" />
                          </items>
                      </Menu>
-                     <Menu mnemonicParsing="false" text="Edit">
+                     <Menu mnemonicParsing="false" text="СУБД">
                          <items>
-                             <MenuItem mnemonicParsing="false" text="Delete" />
+                             <MenuItem mnemonicParsing="false" onAction="#recreateDB" text="Пересоздать" />
                          </items>
                      </Menu>
                      <Menu mnemonicParsing="false" text="Help">

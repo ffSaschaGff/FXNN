@@ -3,9 +3,9 @@ package sample;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-
 import java.util.HashMap;
 
 public class Controller {
@@ -32,5 +32,25 @@ public class Controller {
                 currentField.setText(settings.get(settingsName));
             }
         }
+    }
+
+    public void recreateDB(ActionEvent actionEvent) {
+        ConnectorSQL connectorSQL = ConnectorSQL.getDataDB();
+        if (connectorSQL == null) {
+            try {
+                ConnectorSQL.init();
+                connectorSQL = ConnectorSQL.getDataDB();
+                connectorSQL.createTable();
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка СУБД");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void loadCsvToDB(ActionEvent actionEvent) {
     }
 }
