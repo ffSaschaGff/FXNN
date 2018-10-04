@@ -29,9 +29,12 @@
                         <MenuItem mnemonicParsing="false" onAction="#recalculateDB" text="Пересчитать" />
                          </items>
                      </Menu>
-                     <Menu mnemonicParsing="false" text="Help">
+                     <Menu mnemonicParsing="false" text="ANN">
                          <items>
-                             <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" text="Новая" />
+                             <MenuItem mnemonicParsing="false" text="Загрузить" />
+                        <MenuItem mnemonicParsing="false" text="Сохранить" />
+                        <MenuItem mnemonicParsing="false" onAction="#trainingButtonClick" text="Обучить" />
                          </items>
                      </Menu>
                  </menus>

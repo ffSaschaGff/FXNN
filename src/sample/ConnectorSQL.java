@@ -66,7 +66,7 @@ public class ConnectorSQL {
         ResultSet resultSet = connection.createStatement().executeQuery("select T1._date, T1._open, T1._high, T1._low, T1._close from exchange_data as T1 order by T1._date");
         ArrayList<PreperedDataRow> dataRows = PreperedDataRow.generateArrayOfData(resultSet);
         for (PreperedDataRow row: dataRows) {
-            if (row.isFullData()) {
+            //if (row.isFullData()) {
                 if (sql.length() != 0) {
                     sql.append("\n");
                 }
@@ -85,10 +85,15 @@ public class ConnectorSQL {
                 sql.append("_m1tm2 = '").append(row.isM1tm2()).append("', ");
                 sql.append("_m1m2t = '").append(row.isM1m2t()).append("', ");
                 sql.append("_m2m1t = '").append(row.isM2m1t()).append("', ");
-                sql.append("_m2tm1 = '").append(row.isM2tm1()).append("', ");
-                sql.append(" where T1._data = '").append(row.getDate()).append("';");
-            }
+                sql.append("_m2tm1 = '").append(row.isM2tm1()).append("' ");
+                sql.append(" where T1._date = '").append(row.getDate()).append("';");
+            //}
         }
+        connection.createStatement().execute(sql.toString());
+    }
+
+    public ResultSet getDataForTraining() throws SQLException {
+        return connection.createStatement().executeQuery("select * from exchange_data as t1 where t1._is_up or t1._is_down or t1._is_middle order by T1._date;");
     }
 
     private ConnectorSQL() throws Exception {

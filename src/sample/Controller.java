@@ -19,8 +19,8 @@ public class Controller {
     @FXML
     private Button saveSettingsButton;
 
-    public void showError(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    public void showError(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
@@ -48,12 +48,12 @@ public class Controller {
     public void recreateDB(ActionEvent actionEvent) {
         ConnectorSQL connectorSQL = ConnectorSQL.getDataDB();
         if (connectorSQL == null) {
-            showError("Ошибка СУБД", "");
+            showError("Ошибка СУБД", "", Alert.AlertType.ERROR);
         } else {
             try {
                 connectorSQL.createTable();
             } catch (Exception e) {
-                showError("Ошибка СУБД", e.getMessage());
+                showError("Ошибка СУБД", e.getMessage(), Alert.AlertType.ERROR);
                 e.printStackTrace();
             }
         }
@@ -62,7 +62,7 @@ public class Controller {
     public void loadCsvToDB(ActionEvent actionEvent) {
         ConnectorSQL connectorSQL = ConnectorSQL.getDataDB();
         if (connectorSQL == null) {
-            showError("Ошибка СУБД", "");
+            showError("Ошибка СУБД", "", Alert.AlertType.ERROR);
         } else {
             try {
                 FileChooser fileChooser = new FileChooser();
@@ -70,7 +70,7 @@ public class Controller {
                 File file = fileChooser.showOpenDialog(saveSettingsButton.getScene().getWindow());
                 connectorSQL.loadCsvExchangeData(file);
             } catch (SQLException e) {
-                showError("Ошибка СУБД", e.getMessage());
+                showError("Ошибка СУБД", e.getMessage(), Alert.AlertType.ERROR);
                 e.printStackTrace();
             }
         }
@@ -79,17 +79,29 @@ public class Controller {
     public void recalculateDB(ActionEvent actionEvent) {
         ConnectorSQL connectorSQL = ConnectorSQL.getDataDB();
         if (connectorSQL == null) {
-            showError("Ошибка СУБД", "");
+            showError("Ошибка СУБД", "", Alert.AlertType.ERROR);
         } else {
             try {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("csv","*.csv"));
-                File file = fileChooser.showOpenDialog(saveSettingsButton.getScene().getWindow());
                 connectorSQL.recalculateDB();
             } catch (Exception e) {
-                showError("Ошибка СУБД", e.getMessage());
+                showError("Ошибка СУБД", e.getMessage(), Alert.AlertType.ERROR);
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void trainingButtonClick(ActionEvent actionEvent) {
+        try {
+            MainNeuralNetwork.getANN().train(new CommonCallback<Boolean, Double>() {
+                @Override
+                public Boolean call(Double event) {
+                    showError("Ошибка бучения", event.toString(), Alert.AlertType.INFORMATION);
+                    return false;
+                }
+            });
+        } catch (SQLException e) {
+            showError("Ошибка СУБД", e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
         }
     }
 }

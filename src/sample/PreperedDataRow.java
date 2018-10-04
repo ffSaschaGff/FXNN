@@ -38,6 +38,30 @@ public class PreperedDataRow {
         }
     }
 
+    private PreperedDataRow(ResultSet resultSet) {
+        try {
+            this.date = resultSet.getTimestamp("_date");
+            this.open = resultSet.getDouble("_open");
+            this.close = resultSet.getDouble("_close");
+            this.low = resultSet.getDouble("_low");
+            this.high = resultSet.getDouble("_high");
+            this.bodyNeg = resultSet.getDouble("_body_neg");
+            this.bodyPos = resultSet.getDouble("_body_pos");
+            this.topTail = resultSet.getDouble("_top_tail");
+            this.bottomTail = resultSet.getDouble("_bottom_tail");
+            this.ma1 = resultSet.getDouble("_ma1");
+            this.ma2 = resultSet.getDouble("_ma2");
+            this.tm1m2 = resultSet.getBoolean("_tm1m2");
+            this.tm2m1 = resultSet.getBoolean("_tm2m1");
+            this.m1tm2 = resultSet.getBoolean("_m1tm2");
+            this.m1m2t = resultSet.getBoolean("_m1m2t");
+            this.m2tm1 = resultSet.getBoolean("_m2tm1");
+            this.m2m1t = resultSet.getBoolean("_m2m1t");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static ArrayList<PreperedDataRow> generateArrayOfData(ResultSet resultSet) throws SQLException {
         ArrayList<PreperedDataRow> result = new ArrayList<PreperedDataRow>();
         while (resultSet.next()) {
@@ -51,21 +75,20 @@ public class PreperedDataRow {
         int arrSize = result.size();
         for (int i = 0; i < arrSize; i++) {
             PreperedDataRow currentRow = result.get(i);
-            if (i > MA1-1) {
+            if (i > MA2-1) {
                 double ma1 = 0;
                 for (int j = 0; j < MA1; j++) {
                     ma1 += result.get(i-j).open*(MA1-j);
                 }
                 currentRow.ma1 = ma1/sumMA1;
-            }
-            if (i > MA2-1) {
+
                 double ma2 = 0;
                 for (int j = 0; j < MA2; j++) {
                     ma2 += result.get(i-j).open*(MA2-j);
                 }
                 currentRow.ma2 = ma2/sunMA2;
 
-                if (currentRow.open > currentRow.ma1 && currentRow.ma1 > currentRow.ma1) {
+                if (currentRow.open > currentRow.ma1 && currentRow.ma1 > currentRow.ma2) {
                     currentRow.tm1m2 = true;
                 } else if (currentRow.open > currentRow.ma2 && currentRow.ma2 > currentRow.ma1) {
                     currentRow.tm2m1 = true;
@@ -91,6 +114,15 @@ public class PreperedDataRow {
                 currentRow.fullData = true;
             }
 
+        }
+        return result;
+    }
+
+    public static ArrayList<PreperedDataRow> getArrayOfDataFromDB() throws SQLException {
+        ResultSet resultSet = ConnectorSQL.getDataDB().getDataForTraining();
+        ArrayList<PreperedDataRow> result = new ArrayList<PreperedDataRow>();
+        while (resultSet.next()) {
+            result.add(new PreperedDataRow(resultSet));
         }
         return result;
     }
