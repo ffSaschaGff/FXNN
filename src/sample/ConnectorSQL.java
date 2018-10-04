@@ -35,6 +35,8 @@ public class ConnectorSQL {
         StringBuilder sql = new StringBuilder();
         try {
             for (String line: (new String(Files.readAllBytes(file.toPath()))).split("\n")) {
+                line = line.replaceAll("��","");
+                line = line.replaceAll("\u0000", "");
                 if(sql.length() != 0) {
                     sql.append("\n");
                     sqlDelete.append("\n");
@@ -42,7 +44,11 @@ public class ConnectorSQL {
                 sql.append("INSERT INTO EXCHANGE_DATA (").append(ORDER_IN_CSV).append( ") VALUES (");
                 String[] parts = line.split(",");
                 boolean first = true;
+                int iterator = 0;
                 for (String csvField: parts) {
+                    if (iterator > 4) {
+                        break;
+                    }
                     //first is date
                     if (!first) {
                         sql.append(",");
@@ -51,6 +57,7 @@ public class ConnectorSQL {
                     }
                     sql.append("'").append(csvField).append("'");
                     first = false;
+                    iterator++;
                 }
                 sql.append(");");
             }

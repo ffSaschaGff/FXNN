@@ -104,9 +104,9 @@ public class PreperedDataRow {
             }
 
             if (i < arrSize - FUTURE - 1 && i > MA2-1) {
-                if (1.03*currentRow.open < result.get(i+FUTURE).open) {
+                if (1.005*currentRow.open < result.get(i+FUTURE).open) {
                     currentRow.futureUp = true;
-                } else if (0.97*currentRow.open > result.get(i+FUTURE).open) {
+                } else if (0.995*currentRow.open > result.get(i+FUTURE).open) {
                     currentRow.futureDown = true;
                 } else {
                     currentRow.futureSame = true;
