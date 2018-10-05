@@ -127,6 +127,15 @@ public class PreperedDataRow {
         return result;
     }
 
+    public static ArrayList<PreperedDataRow> getArrayOfLastDataFromDB() throws SQLException {
+        ResultSet resultSet = ConnectorSQL.getDataDB().getLastData();
+        ArrayList<PreperedDataRow> result = new ArrayList<PreperedDataRow>();
+        while (resultSet.next()) {
+            result.add(new PreperedDataRow(resultSet));
+        }
+        return result;
+    }
+
     private static int sumMA1() {
         int sum = 0;
         for(int i = 1; i < MA1+1; i++) {

@@ -96,6 +96,10 @@ public class ConnectorSQL {
         return connection.createStatement().executeQuery("select * from exchange_data as t1 where t1._is_up or t1._is_down or t1._is_middle order by T1._date;");
     }
 
+    public ResultSet getLastData() throws SQLException {
+        return connection.createStatement().executeQuery("select * from exchange_data as t2 where t2._date in (select T1._date from exchange_data as T1 order by T1._date desc limit 5) order by t2._date");
+    }
+
     private ConnectorSQL() throws Exception {
         HashMap<String, String> properties = SettingsKeepper.loadSettings();
         Class.forName("org.postgresql.Driver");
