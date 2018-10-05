@@ -95,7 +95,47 @@ public class Controller {
             MainNeuralNetwork.getANN().train(new CommonCallback<Boolean, Double>() {
                 @Override
                 public Boolean call(Double event) {
-                    showError("Ошибка бучения", event.toString(), Alert.AlertType.INFORMATION);
+                    showError("Ошибка бучения: ", event.toString(), Alert.AlertType.INFORMATION);
+                    return false;
+                }
+            });
+        } catch (SQLException e) {
+            showError("Ошибка СУБД", e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void createNewANN(ActionEvent actionEvent) {
+        MainNeuralNetwork.init();
+    }
+
+    public void loadANN(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("ANN","*.ann"));
+        File file = fileChooser.showOpenDialog(saveSettingsButton.getScene().getWindow());
+        MainNeuralNetwork.getANN().load(file);
+    }
+
+    public void saveANN(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("ANN","*.ann"));
+        File file = fileChooser.showOpenDialog(saveSettingsButton.getScene().getWindow());
+        MainNeuralNetwork.getANN().save(file);
+    }
+
+    public void calculateByLastData(ActionEvent actionEvent) {
+        try {
+            MainNeuralNetwork.getANN().getResultByLastData(new CommonCallback<Boolean, double[]>() {
+                @Override
+                public Boolean call(double[] event) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for(int i = 0; i < Math.min(event.length, MainNeuralNetwork.OUTPUT_NAMES.length); i++) {
+                        if(stringBuilder.length() != 0) {
+                            stringBuilder.append("\n");
+                        }
+                        stringBuilder.append(MainNeuralNetwork.OUTPUT_NAMES[i]).append(": ").append(event[i]);
+                    }
+                    showError("Результат", stringBuilder.toString(), Alert.AlertType.INFORMATION);
                     return false;
                 }
             });

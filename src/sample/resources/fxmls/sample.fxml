@@ -14,7 +14,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="258.0" prefWidth="496.0">
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
              <MenuBar>
                  <menus>
@@ -31,10 +31,11 @@
                      </Menu>
                      <Menu mnemonicParsing="false" text="ANN">
                          <items>
-                        <MenuItem mnemonicParsing="false" text="Новая" />
-                             <MenuItem mnemonicParsing="false" text="Загрузить" />
-                        <MenuItem mnemonicParsing="false" text="Сохранить" />
+                        <MenuItem mnemonicParsing="false" onAction="#createNewANN" text="Новая" />
+                             <MenuItem mnemonicParsing="false" onAction="#loadANN" text="Загрузить" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveANN" text="Сохранить" />
                         <MenuItem mnemonicParsing="false" onAction="#trainingButtonClick" text="Обучить" />
+                        <MenuItem mnemonicParsing="false" onAction="#calculateByLastData" text="Посчитать" />
                          </items>
                      </Menu>
                  </menus>
