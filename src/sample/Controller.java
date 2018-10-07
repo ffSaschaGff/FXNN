@@ -20,6 +20,8 @@ public class Controller {
     private Button saveSettingsButton;
     @FXML
     private TextField dateOfResult;
+    @FXML
+    private TextField requiredError;
 
     public void showError(String title, String content, Alert.AlertType type) {
         Alert alert = new Alert(type);
@@ -93,8 +95,14 @@ public class Controller {
     }
 
     public void trainingButtonClick(ActionEvent actionEvent) {
+        int error = 10;
         try {
-            MainNeuralNetwork.getANN().train(new CommonCallback<Boolean, Double>() {
+            error = Integer.parseInt(requiredError.getText());
+        } catch (Exception e) {
+            showError("Ошибка", "Не удалось распознать число, ошибка будет считаться до е-10", Alert.AlertType.ERROR);
+        }
+        try {
+            MainNeuralNetwork.getANN().train(error, new CommonCallback<Boolean, Double>() {
                 @Override
                 public Boolean call(Double event) {
                     showError("Ошибка бучения: ", event.toString(), Alert.AlertType.INFORMATION);

@@ -16,6 +16,7 @@ public class MainNeuralNetwork extends MultiLayerPerceptron {
     private static final int LEN_ONE_TIC_INPUT = 10;
     private static MainNeuralNetwork ANN;
     public static final String[] OUTPUT_NAMES = {"Вниз","Так-же","Вверх"};
+    public static final String PATH_TO_SAVE_ANN = System.getProperty("user.home") + "\\default.ann";
 
     private MainNeuralNetwork(int[] layers) {
         super(layers);
@@ -30,7 +31,7 @@ public class MainNeuralNetwork extends MultiLayerPerceptron {
         return ANN;
     }
 
-    public void train(CommonCallback<Boolean, Double> callback) throws SQLException {
+    public void train(int error, CommonCallback<Boolean, Double> callback) throws SQLException {
         ArrayList<PreperedDataRow> preperedData = PreperedDataRow.getArrayOfDataFromDB();
 
         DataSet dataSet = new DataSet(PAST_PERIODS*LEN_ONE_TIC_INPUT, 3);
@@ -54,8 +55,8 @@ public class MainNeuralNetwork extends MultiLayerPerceptron {
             }
             dataSet.addRow(input, output);
         }
-        if (callback.call(train(dataSet))) {
-            train(callback);
+        if (callback.call(train(error, dataSet))) {
+            train(error, callback);
         }
     }
 
@@ -94,10 +95,10 @@ public class MainNeuralNetwork extends MultiLayerPerceptron {
         }
     }
 
-    private double train(DataSet dataSet) {
+    private double train(int error, DataSet dataSet) {
         BackPropagation backPropagation = new BackPropagation();
         //backPropagation.setMaxIterations(10000000);
-        backPropagation.setMaxError(1e-9);
+        backPropagation.setMaxError(Math.pow(10, -1*error));
         this.learn(dataSet, backPropagation);
         return backPropagation.getTotalNetworkError();
     }

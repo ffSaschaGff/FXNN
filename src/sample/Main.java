@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.io.File;
+
 public class Main extends Application {
 
     @Override
@@ -19,7 +21,7 @@ public class Main extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                event.consume();
+                MainNeuralNetwork.getANN().save(new File(MainNeuralNetwork.PATH_TO_SAVE_ANN));
             }
         });
     }
@@ -32,6 +34,14 @@ public class Main extends Application {
             e.printStackTrace();
         }
         MainNeuralNetwork.init();
+        File file = new File(MainNeuralNetwork.PATH_TO_SAVE_ANN);
+        if (file.exists()) {
+            try {
+                MainNeuralNetwork.getANN().load(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         launch(args);
     }
 }
