@@ -78,37 +78,44 @@ public class PreperedDataRow {
             if (i > MA2-1) {
                 double ma1 = 0;
                 for (int j = 0; j < MA1; j++) {
-                    ma1 += result.get(i-j).open*(MA1-j);
+                    ma1 += result.get(i-j).close*(MA1-j);
                 }
                 currentRow.ma1 = ma1/sumMA1;
 
                 double ma2 = 0;
                 for (int j = 0; j < MA2; j++) {
-                    ma2 += result.get(i-j).open*(MA2-j);
+                    ma2 += result.get(i-j).close*(MA2-j);
                 }
                 currentRow.ma2 = ma2/sunMA2;
 
-                if (currentRow.open > currentRow.ma1 && currentRow.ma1 > currentRow.ma2) {
+                if (currentRow.close > currentRow.ma1 && currentRow.ma1 > currentRow.ma2) {
                     currentRow.tm1m2 = true;
-                } else if (currentRow.open > currentRow.ma2 && currentRow.ma2 > currentRow.ma1) {
+                } else if (currentRow.close > currentRow.ma2 && currentRow.ma2 > currentRow.ma1) {
                     currentRow.tm2m1 = true;
-                } else if (currentRow.ma2 > currentRow.ma1 && currentRow.ma1 > currentRow.open) {
+                } else if (currentRow.ma2 > currentRow.ma1 && currentRow.ma1 > currentRow.close) {
                     currentRow.m2m1t = true;
-                } else if (currentRow.ma2 > currentRow.open && currentRow.open > currentRow.ma1) {
+                } else if (currentRow.ma2 > currentRow.close && currentRow.close > currentRow.ma1) {
                     currentRow.m2tm1 = true;
-                } else if (currentRow.ma1 > currentRow.ma2 && currentRow.ma2 > currentRow.open) {
+                } else if (currentRow.ma1 > currentRow.ma2 && currentRow.ma2 > currentRow.close) {
                     currentRow.m1m2t = true;
-                } else if (currentRow.ma1 > currentRow.open && currentRow.open < currentRow.ma2) {
+                } else if (currentRow.ma1 > currentRow.close && currentRow.close < currentRow.ma2) {
                     currentRow.m1tm2 = true;
                 }
             }
 
             if (i < arrSize - FUTURE - 1 && i > MA2-1) {
-                if (1.005*currentRow.open < result.get(i+FUTURE).open) {
+                double[] array = {result.get(i+FUTURE).close,result.get(i+FUTURE+1).close,result.get(i+FUTURE-1).close};
+                boolean isMiddle = true;
+
+                if (1.005*currentRow.close < maxArr(array)) {
                     currentRow.futureUp = true;
-                } else if (0.995*currentRow.open > result.get(i+FUTURE).open) {
+                    isMiddle = false;
+                }
+                if (0.995*currentRow.close > minArr(array)) {
                     currentRow.futureDown = true;
-                } else {
+                    isMiddle = false;
+                }
+                if (isMiddle) {
                     currentRow.futureSame = true;
                 }
                 currentRow.fullData = true;
@@ -127,8 +134,8 @@ public class PreperedDataRow {
         return result;
     }
 
-    public static ArrayList<PreperedDataRow> getArrayOfLastDataFromDB() throws SQLException {
-        ResultSet resultSet = ConnectorSQL.getDataDB().getLastData();
+    public static ArrayList<PreperedDataRow> getArrayOfLastDataFromDB(String date) throws SQLException {
+        ResultSet resultSet = ConnectorSQL.getDataDB().getLastData(date);
         ArrayList<PreperedDataRow> result = new ArrayList<PreperedDataRow>();
         while (resultSet.next()) {
             result.add(new PreperedDataRow(resultSet));
@@ -150,6 +157,34 @@ public class PreperedDataRow {
             sum += i;
         }
         return sum;
+    }
+
+    private static double maxArr(double[] arr) {
+        if (arr.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        double max = arr[0];
+        for (double current: arr) {
+            if (current > max) {
+                max = current;
+            }
+        }
+        return max;
+    }
+
+    private static double minArr(double[] arr) {
+        if (arr.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        double min = arr[0];
+        for (double current: arr) {
+            if (current < min) {
+                min = current;
+            }
+        }
+        return min;
     }
 
     public double getOpen() {

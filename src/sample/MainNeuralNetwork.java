@@ -59,8 +59,8 @@ public class MainNeuralNetwork extends MultiLayerPerceptron {
         }
     }
 
-    public void getResultByLastData(CommonCallback<Boolean, double[]> callback) throws SQLException {
-        ArrayList<PreperedDataRow> preperedData = PreperedDataRow.getArrayOfLastDataFromDB();
+    public void getResultByLastData(String date, CommonCallback<Boolean, double[]> callback) throws SQLException {
+        ArrayList<PreperedDataRow> preperedData = PreperedDataRow.getArrayOfLastDataFromDB(date);
 
 
         double[] input = new double[PAST_PERIODS * LEN_ONE_TIC_INPUT];
@@ -96,7 +96,8 @@ public class MainNeuralNetwork extends MultiLayerPerceptron {
 
     private double train(DataSet dataSet) {
         BackPropagation backPropagation = new BackPropagation();
-        backPropagation.setMaxIterations(100);
+        //backPropagation.setMaxIterations(10000000);
+        backPropagation.setMaxError(1e-9);
         this.learn(dataSet, backPropagation);
         return backPropagation.getTotalNetworkError();
     }

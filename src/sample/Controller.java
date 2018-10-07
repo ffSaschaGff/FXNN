@@ -18,6 +18,8 @@ public class Controller {
 
     @FXML
     private Button saveSettingsButton;
+    @FXML
+    private TextField dateOfResult;
 
     public void showError(String title, String content, Alert.AlertType type) {
         Alert alert = new Alert(type);
@@ -119,13 +121,13 @@ public class Controller {
     public void saveANN(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("ANN","*.ann"));
-        File file = fileChooser.showOpenDialog(saveSettingsButton.getScene().getWindow());
+        File file = fileChooser.showSaveDialog(saveSettingsButton.getScene().getWindow());
         MainNeuralNetwork.getANN().save(file);
     }
 
     public void calculateByLastData(ActionEvent actionEvent) {
         try {
-            MainNeuralNetwork.getANN().getResultByLastData(new CommonCallback<Boolean, double[]>() {
+            MainNeuralNetwork.getANN().getResultByLastData(this.dateOfResult.getText(),new CommonCallback<Boolean, double[]>() {
                 @Override
                 public Boolean call(double[] event) {
                     StringBuilder stringBuilder = new StringBuilder();

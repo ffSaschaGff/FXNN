@@ -35,6 +35,9 @@ public class ConnectorSQL {
         StringBuilder sql = new StringBuilder();
         try {
             for (String line: (new String(Files.readAllBytes(file.toPath()))).split("\n")) {
+                if (line.length()==0) {
+                    continue;
+                }
                 line = line.replaceAll("��","");
                 line = line.replaceAll("\u0000", "");
                 if(sql.length() != 0) {
@@ -103,8 +106,12 @@ public class ConnectorSQL {
         return connection.createStatement().executeQuery("select * from exchange_data as t1 where t1._is_up or t1._is_down or t1._is_middle order by T1._date;");
     }
 
-    public ResultSet getLastData() throws SQLException {
-        return connection.createStatement().executeQuery("select * from exchange_data as t2 where t2._date in (select T1._date from exchange_data as T1 order by T1._date desc limit 5) order by t2._date");
+    public ResultSet getLastData(String date) throws SQLException {
+        if (date.length()==0) {
+            return connection.createStatement().executeQuery("select * from exchange_data as t2 where t2._date in (select T1._date from exchange_data as T1 order by T1._date desc limit 5) order by t2._date");
+        } else {
+            return connection.createStatement().executeQuery("select * from exchange_data as t2 where t2._date in (select T1._date from exchange_data as T1 where T1._date <= '"+date+"' order by T1._date desc limit 5) order by t2._date");
+        }
     }
 
     private ConnectorSQL() throws Exception {
